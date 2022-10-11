@@ -16,7 +16,7 @@ public class NavalBattleGame {
 		actions();
 	}
 	
-   public boolean start() {
+   public boolean startGame() {
 		boolean result=false;
 		if(player1.isEnabled() && player2.isEnabled()) {
 			if(cont==0) {
@@ -34,15 +34,13 @@ public class NavalBattleGame {
 	public void actions() {
 		player1.getAttackButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 if(start()) {	
+				 if(startGame()) {	
 				    	if(player1.isTurn()) {
 				    		try {
 				    			attack(player1,player2);
 				    			if(player1.isGameOver()) {
-				    				player1.gameOver();
-									player2.gameOver();
-				    				player1.getAttackButton().setEnabled(false);
-				    				player2.getAttackButton().setEnabled(false);
+				    				player1.gameOver(player1.getName());
+									player2.gameOver(player1.getName());   				
 				    			}
 							} catch (Exception e2) {
 								// TODO: handle exception
@@ -56,15 +54,13 @@ public class NavalBattleGame {
 		});
 		player2.getAttackButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {	
-				if (start()) {
+				if (startGame()) {
 					if (player2.isTurn()) {
 						try {
 							attack(player2, player1);
 							if(player2.isGameOver()) {
-								player1.gameOver();
-								player2.gameOver();
-			    				player1.getAttackButton().setEnabled(false);
-			    				player2.getAttackButton().setEnabled(false);
+								player1.gameOver(player2.getName());
+								player2.gameOver(player2.getName());
 			    			}
 						} catch (Exception e2) {
 							// TODO: handle exception
@@ -87,7 +83,7 @@ public class NavalBattleGame {
 			String message = attacked.receiveAttack(x, y);
 			attacker.markShot(x, y, message);
 			if(message.equals("HUNDIDO")) {
-				attacker.markBoatOnShotBoard(attacked.boat(x, y));
+				attacker.markBoatOnShotBoard(attacked.getBoat(x, y));
 			}
 			attacked.setTurn(true);
 			attacker.setTurn(false);

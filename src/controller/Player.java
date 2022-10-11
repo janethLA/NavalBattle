@@ -5,7 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 import model.Boat;
+import validations.DrawBoatValidation;
 import view.PlayerBoardView;
 
 public class Player {
@@ -33,7 +36,16 @@ public class Player {
 		playerBoard.getHeaderView().getDrawButton().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					drawBoat(playerBoard.getHeaderView().actionDrawButton());
+					String[] arg = playerBoard.getHeaderView().actionDrawButton();
+					int x = convertStringToNumber(arg[0]);
+					if (DrawBoatValidation.validationDrawBoat(boats, x, Integer.parseInt(arg[1]))) {
+						drawBoat(arg);
+
+					} else {
+						JOptionPane.showMessageDialog(null, " Draw the boat in another position \n Please try again",
+								"Error", JOptionPane.ERROR_MESSAGE);
+					}
+
 				} catch (Exception e2) {
 					// TODO: handle exception
 				}
@@ -50,17 +62,21 @@ public class Player {
 	public void drawBoat(String [] arg) {
 		int x = convertStringToNumber(arg[0]);
 		Boat boat = new Boat(x, Integer.parseInt(arg[1]), arg[2], arg[3]);
-		for(int i=0;i< boat.getCoordinates().length;i++) {
-			playerBoard.getBoatBoard().setCellColor(boat.getCoordinates()[i].getX(),boat.getCoordinates()[i].getY(), new Color(169, 119, 69 ));
+		if(DrawBoatValidation.boatValited(boat)) {
+			for(int i=0;i< boat.getCoordinates().length;i++) {
+				playerBoard.getBoatBoard().setCellColor(boat.getCoordinates()[i].getX(),boat.getCoordinates()[i].getY(), new Color(169, 119, 69 ));
+			}	
+			boats.add(boat);
+			playerBoard.getHeaderView().removeItem();
+		}else {
+			JOptionPane.showMessageDialog(null," Draw the boat in another position \n Please try again",
+					"Error", JOptionPane.ERROR_MESSAGE);
 		}	
-		boats.add(boat);
-
 	}
 	
 	public boolean isAvailableShot(int x, int y) {
 		boolean result = false;
 		if (playerBoard.getShotBoard().getMatrix()[x-1][y-1].getText().isEmpty()) {
-			System.out.println("isDisponible: "+playerBoard.getShotBoard().getMatrix()[x-1][y-1].getText());
 			result = true;
 		}
 		return result;
@@ -74,6 +90,7 @@ public class Player {
 				if(x==boats.get(i).getCoordinates()[j].getX() && y==boats.get(i).getCoordinates()[j].getY()) {
 					isFound =  true;
 					playerBoard.getBoatBoard().setCellColor(x,y,Color.RED);
+					playerBoard.getBoatBoard().getMatrix()[x-1][y-1].setText("X");
 					result = "TOCADO";
 					if(isSunk(boats.get(i))) {
 						result = "HUNDIDO";
@@ -111,18 +128,12 @@ public class Player {
 	    }
 	}
 	
-	public void gameOver() {
-		playerBoard.getHeaderView().getMessage().setText("GAME OVER!");
-	    playerBoard.getHeaderView().getWinnerPlayer().setText("Winner player: "+name);
-	}
-	
-	public Boat boat(int x, int y) {
+	public Boat getBoat(int x, int y) {
 		Boat boat=null;
 		boolean isFound = false;
 		for(int i = 0;i<boats.size() && isFound==false;i++) {
 			for(int j = 0;j<boats.get(i).getCoordinates().length && isFound==false;j++) {
 				if(x==boats.get(i).getCoordinates()[j].getX() && y==boats.get(i).getCoordinates()[j].getY()) {
-					System.out.println("When hundido: "+boats.get(i).getName() +"x:"+x+", y:"+y);
 					isFound =  true;
 					boat = boats.get(i);
 				}
@@ -142,15 +153,11 @@ public class Player {
 		return result;
 	}
 	
-	private int convertStringToNumber(String m) {
-		int result = 0, cont =0  ;
-		char c = m.charAt(0);
-		for(char i = 'A'; i <= 'J' ; i++) {
-			cont++;
-			 if(c== i)
-				 result = cont;
-		}
-   	    return result;
+	public void gameOver(String name) {
+		playerBoard.getHeaderView().getMessage().setText("GAME OVER!");
+	    playerBoard.getHeaderView().getWinnerPlayer().setText("Winner player: "+name);
+	    getAttackButton().setEnabled(false);
+		getAttackButton().setEnabled(false);
 	}
 	
 	public boolean isEnabled() {
@@ -191,4 +198,16 @@ public class Player {
 		result[1]= Integer.parseInt( pos[1]);
 		return result;
 	}
+	
+	private int convertStringToNumber(String m) {
+		int result = 0, cont =0  ;
+		char c = m.charAt(0);
+		for(char i = 'A'; i <= 'J' ; i++) {
+			cont++;
+			 if(c== i)
+				 result = cont;
+		}
+   	    return result;
+	}
+	
 }

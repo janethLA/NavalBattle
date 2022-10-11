@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-public class Board extends JPanel implements JPanelComponent{
+public class Board extends JPanel implements ComponentInterface{
 
 	private JLabel[][] matrix;
 	private String title;
@@ -16,14 +16,19 @@ public class Board extends JPanel implements JPanelComponent{
 		this.title = title;
 		this.color = color;
 		matrix = new JLabel[10][10];
-		setSize(385, 420);
-		setBackground(Color.BLACK);
-        setLayout(null);
 		initComponent();
+		drawComponent();
 	}
     
 	@Override
-	public void initComponent() {
+	public void initComponent() {	
+		setSize(385, 420);
+		setBackground(Color.BLACK);
+        setLayout(null);	
+	}
+	
+	@Override
+	public void drawComponent() {
 		startHeader();
 		drawBoard();
 	}

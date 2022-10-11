@@ -2,6 +2,8 @@ package view;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.ArrayList;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,7 +15,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
-public class HeaderView extends JPanel implements JPanelComponent {
+import model.Boat;
+import validations.DrawBoatValidation;
+import validations.HeaderViewValidation;
+
+public class HeaderView extends JPanel implements ComponentInterface {
 
 	private JComboBox boatType;
 	private JLabel initialPositionLabel;
@@ -29,14 +35,19 @@ public class HeaderView extends JPanel implements JPanelComponent {
 	private JLabel winnerPlayer;
 	
 	public HeaderView() {
-		setBounds(0, 0, 820, 200);
-		setLayout(null); 
-	    setBackground(new Color(255, 235, 177 ));
 		initComponent();
+		drawComponent();
 	}
 	
 	@Override
 	public void initComponent() {
+		setBounds(0, 0, 820, 200);
+		setLayout(null); 
+	    setBackground(new Color(255, 235, 177 ));
+	}
+	
+	@Override
+	public void drawComponent() {
 		
 		Font font = new Font("Arial", Font.BOLD, 20);
 		Font fontMessage = new Font("Arial Rounded MT Bold", Font.BOLD, 35);
@@ -107,23 +118,19 @@ public class HeaderView extends JPanel implements JPanelComponent {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 	
+			
 			String positionX = initialPositionX.getText().toUpperCase();
-			if( validationForPositionField(positionX, initialPositionY.getText())) {
-				result[0] = positionX;
-				result[1] = initialPositionY.getText();
-				result[2] = (String)boatType.getSelectedItem();
-				if(horizontal.isSelected()) {
-					result[3] = horizontal.getText();
-				}else {
-					result[3] = vertical.getText();
-				}
-				boatType.removeItem(boatType.getSelectedItem());
-				if(boatType.getItemCount()==0) {
-					startGameButton.setEnabled(true);
-					startGameButton.setBackground(new Color(18, 46, 200));
-					startGameButton.setBorder(new LineBorder(Color.BLACK,1));
-					drawButton.setEnabled(false);
-				}
+			if( HeaderViewValidation.validationForPositionField(positionX, initialPositionY.getText())) {
+				
+					result[0] = positionX;
+					result[1] = initialPositionY.getText();
+					result[2] = (String)boatType.getSelectedItem();
+					if(horizontal.isSelected()) {
+						result[3] = horizontal.getText();
+					}else {
+						result[3] = vertical.getText();
+					}
+					
 			}else {
 				JOptionPane.showMessageDialog(null, 
 						initialPositionLabel.getText().substring(0,initialPositionLabel.getText().length()-1)+" field is not correct. \n Please try again",
@@ -133,6 +140,15 @@ public class HeaderView extends JPanel implements JPanelComponent {
 		return result;
 	}
 
+	public void removeItem() {
+		boatType.removeItem(boatType.getSelectedItem());
+		if(boatType.getItemCount()==0) {
+			startGameButton.setEnabled(true);
+			startGameButton.setBackground(new Color(18, 46, 200));
+			startGameButton.setBorder(new LineBorder(Color.BLACK,1));
+			drawButton.setEnabled(false);
+		}
+	}
 	public void actionStartGameButton() {
 
 		drawButton.setVisible(false);
@@ -157,7 +173,7 @@ public class HeaderView extends JPanel implements JPanelComponent {
 					"Error", JOptionPane.ERROR_MESSAGE);
 		} else {
 			String positionX = initialPositionX.getText().toUpperCase();
-			if( validationForPositionField(positionX, initialPositionY.getText())) {
+			if( HeaderViewValidation.validationForPositionField(positionX, initialPositionY.getText())) {
 				result [0] = positionX;
 				result [1] = initialPositionY.getText();
 			}else {
@@ -189,37 +205,4 @@ public class HeaderView extends JPanel implements JPanelComponent {
 	public JLabel getWinnerPlayer() {
 		return winnerPlayer;
 	}
-	
-	private boolean validationForPositionField(String x, String y) {
-		boolean result = false;
-		if(x.length() == 1) {
-			try {
-				char coorX = x.charAt(0);
-				int coorY = Integer.parseInt(y);
-				if( validationCoorX(coorX) && validationCoorY(coorY) )
-					result = true;
-			} catch (Exception e) {}
-		}
-		return result;
-	}
-	
-    private boolean validationCoorX(char x) {
-    	boolean result = false;
-    	for(char i = 'A'; i <= 'J' ; i++) {
-			 if(x== i)
-					result = true;
-		}
-    	return result;
-    }
-    
-    private boolean validationCoorY(int y) {
-    	boolean result = false;
-    	for(int i = 1; i <= 10 ; i++) {
-			if(y==i)
-				result = true;
-		 }
-    	return result;
-    }
-
-	
 }
