@@ -14,6 +14,7 @@ public class Boat {
 		this.name = name;
 		this.orientation = orientation;
 		init();
+		createBoat();
 	}
 	
 	public void init() {
@@ -43,7 +44,19 @@ public class Boat {
 			}
 		}
 	}
-		
+	
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public String getOrientation() {
+		return orientation;
+	}
+
 	public Coordinate[] getCoordinates() {
 		return coordinates;
 	}
